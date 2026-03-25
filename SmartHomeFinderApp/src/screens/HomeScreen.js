@@ -32,7 +32,6 @@ const HomeScreen = () => {
         setProperties(data || []);
         setFiltered(data || []);
       } catch (err) {
-        console.error('Home fetch error:', err.response || err.message);
         setError('Could not load properties.');
       } finally {
         setLoading(false);

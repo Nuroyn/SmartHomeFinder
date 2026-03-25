@@ -18,7 +18,7 @@ async function request(path, options = {}) {
   Object.keys(headers).forEach((k) => { if (headers[k] === undefined) delete headers[k] })
 
   const url = `${API_BASE_URL}${path}`
-  console.log('[API]', options.method || 'GET', url)
+  if (__DEV__) console.log('[API]', options.method || 'GET', url)
 
   const res = await fetch(url, { ...options, headers })
 

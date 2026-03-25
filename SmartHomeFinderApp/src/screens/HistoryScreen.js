@@ -81,7 +81,6 @@ const HistoryScreen = () => {
         const data = await fetchMyProperties();
         setItems(data || []);
       } catch (err) {
-        console.error("History fetch error", err.response || err.message);
         setError("Could not load history.");
       } finally {
         setLoading(false);

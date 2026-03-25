@@ -107,7 +107,6 @@ const PropertyDetailsScreen = () => {
         }
         setProperty(result || null);
       } catch (err) {
-        console.error("Property details fetch error", err.response || err.message);
         setError("Could not load property.");
       } finally {
         setLoading(false);
@@ -156,7 +155,6 @@ const PropertyDetailsScreen = () => {
         const sorted = Array.from(deduped.values()).sort((a, b) => a.distance - b.distance).slice(0, 20);
         setAmenities({ loading: false, data: sorted, error: null });
       } catch (err) {
-        console.error("Amenity lookup error", err);
         setAmenities({ loading: false, data: [], error: "Could not load nearby amenities." });
       }
     };

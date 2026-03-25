@@ -49,7 +49,7 @@ export default function Home() {
       const data = await propertyService.fetchPublic(params)
       setProperties(data.properties ?? data ?? [])
     } catch (err) {
-      console.warn('Home fetch error:', err.message ?? err)
+      if (__DEV__) console.warn('Home fetch error:', err.message ?? err)
       setProperties([])
     } finally {
       setLoading(false)

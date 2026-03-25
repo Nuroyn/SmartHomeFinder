@@ -40,7 +40,6 @@ const ProfileScreen = () => {
       setShowCamera(false);
       alert("Avatar updated!");
     } catch (err) {
-      console.error("Avatar upload error:", err);
       alert("Could not update avatar");
     }
   };

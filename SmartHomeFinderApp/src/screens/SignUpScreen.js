@@ -3,6 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { useAuth } from "../context/UserContext";
+import api from "../api/api";
 
 
 const SignUpScreen = () => {
@@ -69,30 +70,15 @@ const SignUpScreen = () => {
     setSubmitting(true);
 
     try {
-      const res = await fetch(
-        (process.env.REACT_APP_API_BASE_URL || "http://localhost:5002") + "/api/auth/signup",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            name: formData.name,
-            phone: formData.phone,
-            email: formData.email,
-            password: formData.password,
-            role: userType,
-          }),
-        }
-      );
+      const res = await api.post("/api/auth/signup", {
+        name: formData.name,
+        phone: formData.phone,
+        email: formData.email,
+        password: formData.password,
+        role: userType,
+      });
 
-      const data = await res.json();
-
-      if (!res.ok) {
-        // Handle backend error
-        setErrors({ api: data.message || "Sign up failed" });
-        return;
-      }
+      const data = res.data;
 
       // --- Success Handling ---
       setSuccessMessage("Sign up Successful! Redirecting...");
@@ -110,8 +96,8 @@ const SignUpScreen = () => {
       }, 1500); // Navigate after 1.5 seconds
 
     } catch (err) {
-      console.error("Signup error:", err);
-      setErrors({ api: "Something went wrong. Try again." });
+      const msg = err?.response?.data?.message || "Something went wrong. Try again.";
+      setErrors({ api: msg });
     } finally {
       setSubmitting(false);
     }

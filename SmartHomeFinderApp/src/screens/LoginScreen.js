@@ -54,7 +54,6 @@ const LoginScreen = () => {
       navigate("/profile");
     })
     .catch((err) => {
-      console.log(err);
       alert("Invalid login details");
     })
     .finally(() => {

@@ -24,7 +24,7 @@ async function runMigrations() {
       "006_allow_media_urls.sql",
       "007_add_admin_flags_if_missing.sql",
       "008_admin_audit_admin_id_integer.sql",
-      "009_admin_audit_admin_id_integer.sql",
+      "009_admin_audit_align_types.sql",
       "010_admin_audit_uuid_ids.sql",
       "011_add_user_phone.sql",
       "012_create_transactions.sql",

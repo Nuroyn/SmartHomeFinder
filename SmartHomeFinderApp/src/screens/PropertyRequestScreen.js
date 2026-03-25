@@ -59,7 +59,6 @@ const PropertyRequestScreen = () => {
 
       }
     } catch (err) {
-      console.error("Error submitting property request:", err);
       alert("There was an error submitting your request.");
     } finally {
       setSubmitting(false);

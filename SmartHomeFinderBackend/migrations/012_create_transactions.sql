@@ -5,7 +5,7 @@ CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
 CREATE TABLE IF NOT EXISTS transactions (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  property_id UUID REFERENCES properties(id) ON DELETE CASCADE,
+  property_id INTEGER REFERENCES properties(id) ON DELETE CASCADE,
   buyer_id UUID REFERENCES users(id),
   seller_id UUID REFERENCES users(id),
   purpose VARCHAR(10) CHECK (purpose IN ('Rent', 'Sell')),

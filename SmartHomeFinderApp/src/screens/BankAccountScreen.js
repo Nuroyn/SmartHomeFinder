@@ -28,7 +28,7 @@ function BankAccountScreen() {
         setLocked(Boolean(data.locked));
         setIsEditing(!data.accountName && !data.accountNumber && !data.bankName);
       } catch (err) {
-        console.error("Fetch bank account error", err);
+        // handled by UI
       } finally {
         setLoading(false);
       }
@@ -60,7 +60,6 @@ function BankAccountScreen() {
       setIsEditing(false);
       alert(res.data.message || "Bank details saved.");
     } catch (err) {
-      console.error("Update bank account error", err);
       const msg = err?.response?.data?.message || "Could not save bank details";
       alert(msg);
     }

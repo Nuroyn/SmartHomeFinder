@@ -69,7 +69,6 @@ const AddProperty = ({ setShowAddProperty = () => {} }) => {
     const files = e.target.files;
     
     if (files.length === 0) {
-      console.error("No file selected");
       return;
     }
 
@@ -110,7 +109,6 @@ const AddProperty = ({ setShowAddProperty = () => {} }) => {
       setMessage({ type: "success", text: "Images uploaded successfully." });
       setTimeout(() => setMessage(null), 5000);
     } catch (error) {
-      console.error("❌ Error uploading image:", error.response ? error.response.data : error.message);
       setMessage({ type: "error", text: "Error uploading image, please try again." });
       setTimeout(() => setMessage(null), 7000);
     } finally {
@@ -147,12 +145,10 @@ const handleVideoChange = async (e) => {
           setMessage({ type: "success", text: "Video uploaded successfully." });
           setTimeout(() => setMessage(null), 5000);
         } else {
-          console.error("Video upload failed. Response:", response);
           setMessage({ type: "error", text: "Failed to upload video. Please try again." });
           setTimeout(() => setMessage(null), 7000);
         }
     } catch (error) {
-      console.error("Error uploading video:", error.response ? error.response.data : error.message);
       if (error.response && error.response.data) {
         setMessage({ type: "error", text: `Error uploading video: ${JSON.stringify(error.response.data)}` });
       } else {
@@ -163,7 +159,6 @@ const handleVideoChange = async (e) => {
       setUploadingVideo(false);
     }
   } else {
-    console.error("No video file selected.");
     setMessage({ type: "error", text: "Please select a video file." });
     setTimeout(() => setMessage(null), 5000);
   }
@@ -198,12 +193,10 @@ const handleDocChange = async (e) => {
         setMessage({ type: "success", text: "Document uploaded successfully." });
         setTimeout(() => setMessage(null), 5000);
       } else {
-        console.error("Document upload failed. Response:", response);
         setMessage({ type: "error", text: "Failed to upload document. Please try again." });
         setTimeout(() => setMessage(null), 7000);
       }
     } catch (error) {
-      console.error("Error uploading document:", error.response ? error.response.data : error.message);
       if (error.response && error.response.data) {
         setMessage({ type: "error", text: `Error uploading document: ${JSON.stringify(error.response.data)}` });
       } else {
@@ -214,7 +207,6 @@ const handleDocChange = async (e) => {
       setUploadingDoc(false);
     }
   } else {
-    console.error("No document file selected.");
     setMessage({ type: "error", text: "Please select a document file." });
     setTimeout(() => setMessage(null), 5000);
   }
@@ -232,7 +224,6 @@ const handleDocChange = async (e) => {
     }
 
     if (!formData.images || formData.images.length === 0) {
-      console.error("No images uploaded yet; blocking submit");
       setMessage({ type: "error", text: "Upload at least one image before submitting." });
       setTimeout(() => setMessage(null), 6000);
       return;
@@ -291,7 +282,6 @@ const handleDocChange = async (e) => {
         }, 1200);
       }
     } catch (error) {
-      console.error("❌ Error adding property:", error);
       setMessage({ type: "error", text: "Error adding property, please try again." });
       setTimeout(() => setMessage(null), 8000);
     } finally {

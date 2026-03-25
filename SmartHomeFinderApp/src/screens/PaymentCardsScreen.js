@@ -16,7 +16,6 @@ function PaymentCardsScreen() {
         const res = await api.get("/api/payments/cards");
         setCards(res.data.cards || []);
       } catch (err) {
-        console.error("Fetch cards error", err);
         setError(err?.response?.data?.message || "Could not load cards");
       } finally {
         setLoading(false);
@@ -36,7 +35,6 @@ function PaymentCardsScreen() {
         alert("No authorization URL returned");
       }
     } catch (err) {
-      console.error("Add card error", err);
       const msg = err?.response?.data?.message || "Could not start card addition";
       alert(msg);
     }

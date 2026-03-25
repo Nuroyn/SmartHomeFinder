@@ -27,7 +27,6 @@ function MoneyBoxScreen() {
       } catch (err) {
         const msg = err?.response?.data?.message || err.message || "Could not load account";
         setVaError(msg);
-        console.warn("Could not load virtual account", msg);
       } finally {
         setVaLoading(false);
       }
