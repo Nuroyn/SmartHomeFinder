@@ -36,6 +36,9 @@
     },
     "plugins": [
       "expo-router"
-    ]
+    ],
+    "extra": {
+      "apiBaseUrl": "http://172.20.10.9:5002"
+    }
   }
 }
