@@ -3,7 +3,7 @@ import { Keyboard, Pressable, ScrollView, StyleSheet, Text, View } from 'react-n
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router'
 import { COLORS, FONTS, SIZES } from '../../src/theme'
-import { Input, Button } from '../../src/components'
+import { Input, Button, Footer } from '../../src/components'
 import { authService } from '../../src/services/authService'
 import { useAuth } from '../../src/hooks/useAuth'
 
@@ -98,6 +98,8 @@ export default function SignIn() {
             Don\u2019t have an account? <Text style={styles.footerAccent}>Sign up</Text>
           </Text>
         </Pressable>
+
+        <Footer />
       </ScrollView>
     </SafeAreaView>
   )

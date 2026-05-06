@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
 import { COLORS, FONTS, SHADOWS, SIZES } from '../../src/theme'
-import { ScreenHeader } from '../../src/components'
+import { ScreenHeader, Footer } from '../../src/components'
 import { useAuth } from '../../src/hooks/useAuth'
 
 export default function DeleteAccount() {
@@ -71,6 +71,8 @@ export default function DeleteAccount() {
           <Ionicons name="trash-outline" size={18} color={COLORS.textOnDark} />
           <Text style={styles.deleteBtnText}>Delete my account</Text>
         </Pressable>
+
+        <Footer />
       </ScrollView>
     </SafeAreaView>
   )

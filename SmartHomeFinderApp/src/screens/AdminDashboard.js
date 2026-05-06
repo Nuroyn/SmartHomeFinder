@@ -155,7 +155,7 @@ const PropertiesTab = () => {
                 <div style={{ marginTop: 4, display: "flex", gap: 8, flexWrap: "wrap" }}>
                   <a href={mapUrl(p)} target="_blank" rel="noopener noreferrer" aria-label={`View ${p.name || "property"} on Google Maps (opens in new tab)`} style={{ fontSize: 12 }}>View location</a>
                   {(p.property_doc || p.propertyDoc) && (
-                    <a href={p.property_doc || p.propertyDoc} target="_blank" rel="noopener noreferrer" style={{ fontSize: 12 }}>View document</a>
+                    <a href={p.property_doc || p.propertyDoc} download target="_blank" rel="noopener noreferrer" aria-label={`Download document for ${p.name || "property"}`} style={{ fontSize: 12 }}>Download document</a>
                   )}
                 </div>
               </div>

@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
 import { COLORS, FONTS, SHADOWS, SIZES } from '../../src/theme'
-import { ScreenHeader } from '../../src/components'
+import { ScreenHeader, Footer } from '../../src/components'
 
 const sections = [
   {
@@ -118,6 +118,8 @@ export default function Legal() {
             <Text style={styles.ctaBtnText}>Email support</Text>
           </Pressable>
         </View>
+
+        <Footer />
       </ScrollView>
     </SafeAreaView>
   )

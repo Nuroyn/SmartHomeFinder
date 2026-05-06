@@ -3,7 +3,7 @@ import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router'
 import { COLORS, FONTS, SIZES } from '../../src/theme'
-import { PropertyCardDetails, SearchBar, FilterChips, Loader, EmptyState } from '../../src/components'
+import { PropertyCardDetails, SearchBar, FilterChips, Loader, EmptyState, Footer } from '../../src/components'
 import { propertyService } from '../../src/services/propertyService'
 import { useAuth } from '../../src/hooks/useAuth'
 import { useWishlist } from '../../src/hooks/useWishlist'
@@ -72,6 +72,7 @@ export default function Search() {
               ? <EmptyState icon="search-outline" title="No results" message="Try adjusting your search or filters." />
               : <EmptyState icon="search-outline" title="Search properties" message="Type a location, name, or keyword above." />
           }
+          ListFooterComponent={<Footer />}
           contentContainerStyle={styles.list}
           showsVerticalScrollIndicator={false}
         />

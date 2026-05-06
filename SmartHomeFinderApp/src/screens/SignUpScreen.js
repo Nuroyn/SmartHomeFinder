@@ -71,7 +71,7 @@ const SignUpScreen = () => {
 
     try {
       const res = await api.post("/api/auth/signup", {
-        name: formData.name,
+        full_name: formData.name,
         phone: formData.phone,
         email: formData.email,
         password: formData.password,

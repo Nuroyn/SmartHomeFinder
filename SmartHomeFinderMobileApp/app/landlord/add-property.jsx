@@ -9,7 +9,7 @@ import { Ionicons } from '@expo/vector-icons'
 import * as ImagePicker from 'expo-image-picker'
 import * as DocumentPicker from 'expo-document-picker'
 import { COLORS, FONTS, SIZES } from '../../src/theme'
-import { ScreenHeader, Input, Button } from '../../src/components'
+import { ScreenHeader, Input, Button, Footer } from '../../src/components'
 import { api } from '../../src/services/api'
 import { PROPERTY_TYPE_OPTIONS, PURPOSES } from '../../src/constants'
 
@@ -192,6 +192,7 @@ export default function AddProperty() {
     if (!form.location.trim()) e.location = 'Required'
     if (!form.propertyType) e.propertyType = 'Select a type'
     if (!form.purpose) e.purpose = 'Select a purpose'
+    if (!videoUrl) e.video = 'Upload a video tour'
     if (imageUrls.length === 0) e.images = 'Upload at least one image'
     if (form.purpose === 'Sell' && !docUrl) e.doc = 'Upload a property document'
     return e
@@ -358,7 +359,7 @@ export default function AddProperty() {
 
         {/* ---------- video upload ---------- */}
         <View style={styles.group}>
-          <Text style={styles.label}>Video Tour (optional)</Text>
+          <Text style={styles.label}>Video Tour *</Text>
           <Pressable style={styles.uploadBtn} onPress={pickVideo} disabled={uploadingVideo}>
             {uploadingVideo
               ? <ActivityIndicator size="small" color={COLORS.primary} />
@@ -371,6 +372,7 @@ export default function AddProperty() {
               <Text style={styles.successText}>Video uploaded</Text>
             </View>
           )}
+          {errors.video ? <Text style={styles.err}>{errors.video}</Text> : null}
         </View>
 
         {/* ---------- image upload ---------- */}
@@ -411,6 +413,8 @@ export default function AddProperty() {
           disabled={isUploading || submitting}
           style={{ marginTop: 8 }}
         />
+
+        <Footer />
       </ScrollView>
     </SafeAreaView>
   )

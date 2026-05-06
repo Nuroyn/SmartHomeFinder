@@ -10,11 +10,8 @@ class ErrorBoundary extends React.Component {
     return { hasError: true };
   }
 
-  componentDidCatch(error, errorInfo) {
+  componentDidCatch(_error, _errorInfo) {
     // In production, send to an error-reporting service (e.g. Sentry)
-    if (process.env.NODE_ENV !== "production") {
-      console.error("ErrorBoundary caught:", error, errorInfo);
-    }
   }
 
   render() {

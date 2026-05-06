@@ -74,12 +74,43 @@ const parseVideoSource = (raw) => {
   if (!raw || typeof raw !== "string") return null;
   const url = raw.trim();
 
+  const youtubeMatch = url.match(
+    /(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{6,})/
+  );
+  if (youtubeMatch?.[1]) {
+    const id = youtubeMatch[1];
+    return {
+      type: "youtube",
+      src: url,
+      embed: `https://www.youtube.com/embed/${id}`,
+    };
+  }
+
   // Prefer Cloudinary, but allow any http(s) video URL as fallback
   const isCloudinary = /cloudinary\.com|res\.cloudinary\.com/i.test(url);
   if (isCloudinary) return { type: "cloudinary", src: url };
 
   if (/^https?:\/\//i.test(url)) {
     return { type: "direct", src: url };
+  }
+
+  return null;
+};
+
+const resolveVideoRaw = (property) => {
+  if (!property) return null;
+
+  const direct = [property.video_url, property.videoUrl, property.video, property.tour_video]
+    .find((v) => typeof v === "string" && v.trim());
+  if (direct) return direct;
+
+  if (Array.isArray(property.media)) {
+    const mediaVideo = property.media.find(
+      (m) =>
+        (m?.file_type === "video" || m?.type === "video") &&
+        typeof (m?.file_url || m?.url || m?.secure_url) === "string"
+    );
+    if (mediaVideo) return mediaVideo.file_url || mediaVideo.url || mediaVideo.secure_url;
   }
 
   return null;
@@ -127,8 +158,9 @@ const PropertyDetailsScreen = () => {
   const heading = property?.name || "Property Details";
   const links = useMemo(() => amenityLinks(coord), [coord]);
   const images = property?.images || [];
-  const hasVideo = Boolean(property?.video_url);
-  const videoSource = useMemo(() => (hasVideo ? parseVideoSource(property.video_url) : null), [hasVideo, property?.video_url]);
+  const rawVideoUrl = useMemo(() => resolveVideoRaw(property), [property]);
+  const videoSource = useMemo(() => parseVideoSource(rawVideoUrl), [rawVideoUrl]);
+  const hasVideo = Boolean(videoSource);
 
   useEffect(() => {
     if (!coord || coord.query) return; // need lat/lng to call Overpass
@@ -204,7 +236,7 @@ const PropertyDetailsScreen = () => {
               </button>
             </div>
 
-            {(images.length > 0 || property.video_url) && (
+            {(images.length > 0 || rawVideoUrl) && (
               <div style={{ background: "#f7f7f7", borderRadius: 12, padding: 8 }}>
                 {!showTour && images.length > 0 && (
                   <div style={{ position: "relative" }}>
@@ -292,19 +324,17 @@ const PropertyDetailsScreen = () => {
                 <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 8 }}>
                   <button
                     onClick={() => {
-                      if (!hasVideo && !showTour) return;
                       setShowTour((v) => !v);
                     }}
-                    disabled={!hasVideo}
                     style={{
                       background: "#265b3d",
                       color: "#fff",
                       padding: "10px 14px",
                       border: "none",
                       borderRadius: 10,
-                      cursor: hasVideo ? "pointer" : "not-allowed",
+                      cursor: "pointer",
                       fontWeight: 700,
-                      opacity: hasVideo ? 1 : 0.6,
+                      opacity: 1,
                     }}
                   >
                     {showTour ? "Property Images" : "Property Tour"}

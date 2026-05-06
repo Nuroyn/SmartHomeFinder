@@ -7,10 +7,39 @@ const AuthContext = createContext(null)
 
 const initialState = { user: null, token: null, ready: false }
 
+function normalizeUser(u, previousUser = null) {
+  if (!u) return null
+
+  const avatarUrl = u.avatar_url || u.avatar || previousUser?.avatar_url || previousUser?.avatar || null
+  const isVerified =
+    typeof u.is_verified === 'boolean'
+      ? u.is_verified
+      : (typeof u.verified === 'boolean' ? u.verified : (previousUser?.is_verified ?? false))
+
+  return {
+    ...u,
+    avatar_url: avatarUrl,
+    avatar: avatarUrl,
+    is_verified: isVerified,
+    verified: isVerified,
+  }
+}
+
 /** Keep only the fields we need persisted (SecureStore has a 2 KB limit). */
 function compactUser(u) {
   if (!u) return null
-  return { id: u.id, full_name: u.full_name, email: u.email, role: u.role, phone: u.phone, avatar_url: u.avatar_url }
+  const user = normalizeUser(u)
+  return {
+    id: user.id,
+    full_name: user.full_name,
+    email: user.email,
+    role: user.role,
+    phone: user.phone,
+    avatar_url: user.avatar_url,
+    avatar: user.avatar,
+    is_verified: user.is_verified,
+    verified: user.verified,
+  }
 }
 
 function reducer(state, action) {
@@ -43,7 +72,7 @@ export function AuthProvider({ children }) {
           // Validate token is still good
           try {
             const { user: freshUser } = await authService.getProfile()
-            dispatch({ type: 'RESTORE', user: freshUser, token })
+            dispatch({ type: 'RESTORE', user: normalizeUser(freshUser, user), token })
           } catch {
             // Token expired / invalid — clear
             await SecureStore.deleteItemAsync(STORAGE_KEYS.TOKEN)
@@ -62,9 +91,10 @@ export function AuthProvider({ children }) {
   const actions = useMemo(
     () => ({
       login: async (user, token) => {
+        const normalized = compactUser(user)
         await SecureStore.setItemAsync(STORAGE_KEYS.TOKEN, token)
-        await SecureStore.setItemAsync(STORAGE_KEYS.USER, JSON.stringify(compactUser(user)))
-        dispatch({ type: 'LOGIN', user: compactUser(user), token })
+        await SecureStore.setItemAsync(STORAGE_KEYS.USER, JSON.stringify(normalized))
+        dispatch({ type: 'LOGIN', user: normalized, token })
       },
       logout: async () => {
         await SecureStore.deleteItemAsync(STORAGE_KEYS.TOKEN)
@@ -72,9 +102,9 @@ export function AuthProvider({ children }) {
         dispatch({ type: 'LOGOUT' })
       },
       updateUser: async (fields) => {
-        const updated = compactUser({ ...state.user, ...fields })
+        const updated = compactUser(normalizeUser({ ...state.user, ...fields }, state.user))
         await SecureStore.setItemAsync(STORAGE_KEYS.USER, JSON.stringify(updated))
-        dispatch({ type: 'UPDATE_USER', payload: fields })
+        dispatch({ type: 'UPDATE_USER', payload: updated })
       },
     }),
     [state.user],

@@ -3,7 +3,7 @@ import { FlatList, StyleSheet, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router'
 import { COLORS, SIZES } from '../../src/theme'
-import { PropertyCard, ScreenHeader, Loader, EmptyState } from '../../src/components'
+import { PropertyCard, ScreenHeader, Loader, EmptyState, Footer } from '../../src/components'
 import { wishlistService } from '../../src/services/wishlistService'
 import { useAuth } from '../../src/hooks/useAuth'
 import { useWishlist } from '../../src/hooks/useWishlist'
@@ -67,6 +67,7 @@ export default function Favorites() {
           </View>
         )}
         ListHeaderComponent={<ScreenHeader title="Favorites" subtitle={`${properties.length} saved`} />}
+        ListFooterComponent={<Footer />}
         ListEmptyComponent={<EmptyState icon="heart-outline" title="No favorites yet" message="Tap the heart on any listing to save it here." />}
         contentContainerStyle={styles.list}
         showsVerticalScrollIndicator={false}

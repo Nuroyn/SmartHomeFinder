@@ -27,8 +27,8 @@ const PropertyTypes = () => {
         const newConstructionsResponse = await api.get("/api/new-constructions");
         setNewConstructions(newConstructionsResponse.data);
 
-      } catch (error) {
-        console.error("Error fetching data:", error);
+      } catch (_error) {
+        // handle fetch failure silently; user will see empty state
       }
     };
 

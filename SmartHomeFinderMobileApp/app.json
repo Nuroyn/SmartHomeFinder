@@ -38,7 +38,7 @@
       "expo-router"
     ],
     "extra": {
-      "apiBaseUrl": "http://172.20.10.9:5002"
+      "apiBaseUrl": "http://YOUR_LOCAL_IP:5002"
     }
   }
 }

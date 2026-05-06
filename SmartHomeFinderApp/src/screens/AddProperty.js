@@ -229,6 +229,12 @@ const handleDocChange = async (e) => {
       return;
     }
 
+    if (!formData.video_url) {
+      setMessage({ type: "error", text: "Upload a video tour before submitting." });
+      setTimeout(() => setMessage(null), 6000);
+      return;
+    }
+
     try {
       const payload = {
         ...formData,
@@ -503,8 +509,8 @@ const handleDocChange = async (e) => {
 )}
           {/* Video Upload */}
           <div>
-            <label>Upload Video</label>
-            <input id="video-input" type="file" accept="video/*" onChange={handleVideoChange} />
+            <label>Upload Video *</label>
+            <input id="video-input" type="file" accept="video/*" onChange={handleVideoChange} required />
             {formData.video_url && (
               <p style={{ color: "green" }}>
                 ✓ Uploaded: {formData.video_url.split('/').pop()}

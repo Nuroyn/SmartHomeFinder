@@ -3,7 +3,7 @@ import { FlatList, StyleSheet, Text, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { COLORS, FONTS, SIZES } from '../../src/theme'
-import { PropertyCard, Loader, EmptyState, ScreenHeader } from '../../src/components'
+import { PropertyCard, Loader, EmptyState, ScreenHeader, Footer } from '../../src/components'
 import { propertyService } from '../../src/services/propertyService'
 import { useAuth } from '../../src/hooks/useAuth'
 import { useWishlist } from '../../src/hooks/useWishlist'
@@ -100,6 +100,7 @@ export default function CategoryScreen() {
             ? <EmptyState icon="alert-circle-outline" title="Error" message={error} />
             : <EmptyState icon="home-outline" title="No properties" message="No listings in this category yet." />
         }
+        ListFooterComponent={<Footer />}
         contentContainerStyle={styles.list}
         showsVerticalScrollIndicator={false}
       />

@@ -40,17 +40,20 @@ export default function Home() {
   const [properties, setProperties] = useState([])
   const [loading, setLoading] = useState(true)
   const [selectedType, setSelectedType] = useState(null)
+  const [error, setError] = useState(null)
 
   const load = useCallback(async () => {
     setLoading(true)
+    setError(null)
+
     try {
       const params = {}
       if (selectedType) params.property_type = selectedType
       const data = await propertyService.fetchPublic(params)
       setProperties(data.properties ?? data ?? [])
     } catch (err) {
-      if (__DEV__) console.warn('Home fetch error:', err.message ?? err)
       setProperties([])
+      setError(err?.message || 'Unable to load properties.')
     } finally {
       setLoading(false)
     }
@@ -96,7 +99,7 @@ export default function Home() {
           {isLoggedIn ? `Hi, ${user?.full_name?.split(' ')[0] || 'there'}` : 'Find a home you love, faster.'}
         </Text>
         <Text style={styles.heroSubtitle}>
-          Explore verified listings across Nigeria with concierge-level support.
+          Find the right home across Nigeria — verified listings, trusted checks, and transparent 5% fees.
         </Text>
         <View style={styles.heroActions}>
           <Pressable style={styles.primaryBtn} onPress={() => router.push('/(tabs)/search')}>
@@ -108,17 +111,7 @@ export default function Home() {
             </Pressable>
           )}
         </View>
-        <View style={styles.heroStats}>
-          {[{ val: '12k+', label: 'verified listings' }, { val: '4.8\u2605', label: 'client rating' }, { val: '24/7', label: 'concierge chat' }].map((s, i) => (
-            <React.Fragment key={s.label}>
-              {i > 0 && <View style={styles.statDivider} />}
-              <View style={styles.statItem}>
-                <Text style={styles.statValue}>{s.val}</Text>
-                <Text style={styles.statLabel}>{s.label}</Text>
-              </View>
-            </React.Fragment>
-          ))}
-        </View>
+        
       </View>
 
       <Text style={styles.sectionTitle}>Browse Homes by Category</Text>
@@ -171,7 +164,19 @@ export default function Home() {
           </View>
         )}
         ListHeaderComponent={renderHeader}
-        ListEmptyComponent={<EmptyState icon="home-outline" title="No properties yet" message="Check back soon for new listings." />}
+        ListEmptyComponent={
+          <EmptyState
+            icon={error ? 'cloud-offline' : 'home-outline'}
+            title={error ? 'Could not load properties' : 'No properties yet'}
+            message={
+              error
+                ? `${error}. Please check your API host and network connection.`
+                : 'Check back soon for new listings.'
+            }
+            actionTitle={error ? 'Retry' : undefined}
+            onAction={error ? load : undefined}
+          />
+        }
         contentContainerStyle={styles.list}
         showsVerticalScrollIndicator={false}
       />

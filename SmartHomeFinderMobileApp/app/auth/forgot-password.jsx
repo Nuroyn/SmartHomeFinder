@@ -3,7 +3,7 @@ import { Keyboard, Pressable, ScrollView, StyleSheet, Text, View } from 'react-n
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router'
 import { COLORS, FONTS, SIZES } from '../../src/theme'
-import { Input, Button } from '../../src/components'
+import { Input, Button, Footer } from '../../src/components'
 import { authService } from '../../src/services/authService'
 
 export default function ForgotPassword() {
@@ -68,6 +68,8 @@ export default function ForgotPassword() {
         <Pressable onPress={() => router.back()}>
           <Text style={styles.backLink}>Back to Sign In</Text>
         </Pressable>
+
+        <Footer />
       </ScrollView>
     </SafeAreaView>
   )

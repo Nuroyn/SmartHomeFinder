@@ -92,8 +92,7 @@ export default function ImgCard() {
           .filter(Boolean);
 
         setCards(mapped);
-      } catch (err) {
-        console.error("imgCard fetch error:", err.message || err);
+      } catch (_err) {
         setCards(fallbackCards);
       }
     };

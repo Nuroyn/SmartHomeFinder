@@ -5,7 +5,7 @@ import { useRouter } from 'expo-router'
 import * as Location from 'expo-location'
 import { Ionicons } from '@expo/vector-icons'
 import { COLORS, FONTS, SHADOWS, SIZES } from '../../src/theme'
-import { ScreenHeader, Loader, EmptyState, Button } from '../../src/components'
+import { ScreenHeader, Loader, EmptyState, Button, Footer } from '../../src/components'
 import { propertyService } from '../../src/services/propertyService'
 import { formatPrice } from '../../src/utils'
 
@@ -147,6 +147,7 @@ export default function OrderHistory() {
             message="Landlords will see their submitted properties here once added."
           />
         }
+        ListFooterComponent={<Footer />}
         contentContainerStyle={styles.list}
         showsVerticalScrollIndicator={false}
       />

@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
 import { COLORS, FONTS, SHADOWS, SIZES } from '../../src/theme'
-import { ScreenHeader } from '../../src/components'
+import { ScreenHeader, Footer } from '../../src/components'
 
 const faqs = [
   { q: 'How do I list a property?', a: 'Sign up as a landlord, fill the "Add Property" form with photos and documents, then submit for admin approval. Once approved and published your listing goes live.' },
@@ -56,6 +56,8 @@ export default function Faq() {
             <Text style={styles.ctaBtnText}>Email support</Text>
           </Pressable>
         </View>
+
+        <Footer />
       </ScrollView>
     </SafeAreaView>
   )

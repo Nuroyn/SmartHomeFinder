@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
 import { COLORS, FONTS, SHADOWS, SIZES } from '../../src/theme'
-import { ScreenHeader, Loader, EmptyState, Button } from '../../src/components'
+import { ScreenHeader, Loader, EmptyState, Button, Footer } from '../../src/components'
 import { api } from '../../src/services/api'
 
 export default function PaymentCards() {
@@ -85,6 +85,7 @@ export default function PaymentCards() {
               onAction={handleAddCard}
             />
           }
+          ListFooterComponent={<Footer />}
           contentContainerStyle={styles.list}
           showsVerticalScrollIndicator={false}
         />

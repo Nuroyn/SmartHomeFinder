@@ -25,15 +25,11 @@ const pool = new Pool({
 // simple test so you know it's alive
 pool
   .query("SELECT NOW()")
-  .then(() => {
-    console.log("Postgres connected");
-  })
   .catch(() => {
-    console.error("Postgres connection failed");
+    // ignore connection test failure here; connection errors will surface on actual queries
   });
 
 pool.on("error", () => {
-  console.error("Unexpected error on idle client");
   process.exit(1);
 });
 

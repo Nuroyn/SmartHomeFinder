@@ -18,9 +18,16 @@ async function request(path, options = {}) {
   Object.keys(headers).forEach((k) => { if (headers[k] === undefined) delete headers[k] })
 
   const url = `${API_BASE_URL}${path}`
-  if (__DEV__) console.log('[API]', options.method || 'GET', url)
-
-  const res = await fetch(url, { ...options, headers })
+  let res
+  try {
+    res = await fetch(url, { ...options, headers })
+  } catch (error) {
+    const err = new Error(
+      `Network request failed. Check backend reachability at ${API_BASE_URL} (${path})`
+    )
+    err.cause = error
+    throw err
+  }
 
   // Try to parse JSON; fall back to text
   const contentType = res.headers.get('content-type') || ''

@@ -106,9 +106,6 @@ app.use((err, _req, res, _next) => {
   // Don't leak internal details to the client
   const status = err.status || 500;
   const message = status < 500 ? err.message : "Internal server error";
-  if (status >= 500 && process.env.NODE_ENV !== "test") {
-    console.error("Unhandled error:", err);
-  }
   res.status(status).json({ message });
 });
 

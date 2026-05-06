@@ -3,7 +3,7 @@ import { Keyboard, ScrollView, StyleSheet, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router'
 import { COLORS, SIZES } from '../../src/theme'
-import { ScreenHeader, Input, Button } from '../../src/components'
+import { ScreenHeader, Input, Button, Footer } from '../../src/components'
 import { authService } from '../../src/services/authService'
 import { useAuth } from '../../src/hooks/useAuth'
 
@@ -48,6 +48,7 @@ export default function EditProfile() {
         <Input label="Email" value={form.email} onChangeText={(t) => update('email', t)} keyboardType="email-address" autoCapitalize="none" />
         <Input label="Phone" value={form.phone} onChangeText={(t) => update('phone', t)} keyboardType="phone-pad" />
         <Button title="Save Changes" onPress={save} loading={loading} />
+        <Footer />
       </ScrollView>
     </SafeAreaView>
   )

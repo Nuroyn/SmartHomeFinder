@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { useRouter, useLocalSearchParams } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
 import { COLORS, FONTS, SIZES } from '../src/theme'
+import { Footer } from '../src/components'
 
 export default function ModalScreen() {
   const router = useRouter()
@@ -22,6 +23,7 @@ export default function ModalScreen() {
         <Text style={styles.copy}>Messaging coming soon.</Text>
         <Text style={styles.sub}>For now, contact support for property inquiries.</Text>
       </View>
+      <Footer />
     </SafeAreaView>
   )
 }

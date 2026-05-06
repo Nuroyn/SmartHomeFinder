@@ -3,7 +3,7 @@ import { FlatList, StyleSheet, Text, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router'
 import { COLORS, FONTS, SIZES } from '../../src/theme'
-import { ScreenHeader, Loader, EmptyState } from '../../src/components'
+import { ScreenHeader, Loader, EmptyState, Footer } from '../../src/components'
 import { paymentService } from '../../src/services/paymentService'
 import { formatPrice } from '../../src/utils'
 
@@ -45,6 +45,7 @@ export default function Transactions() {
           </View>
         )}
         ListEmptyComponent={<EmptyState icon="receipt-outline" title="No transactions" message="Your payment history will appear here." />}
+        ListFooterComponent={<Footer />}
         contentContainerStyle={styles.list}
       />
     </SafeAreaView>

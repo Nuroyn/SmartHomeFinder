@@ -11,8 +11,6 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 async function runMigrations() {
   try {
-    console.log("Starting migrations...");
-
     // Run all migrations in order
     const migrationFiles = [
       "000_create_properties_table.sql",
@@ -37,19 +35,12 @@ async function runMigrations() {
 
     for (const migrationFile of migrationFiles) {
       const filePath = path.join(__dirname, "migrations", migrationFile);
-      console.log(`\n📋 Running migration: ${migrationFile}`);
-      
       const sql = fs.readFileSync(filePath, "utf8");
-
-      // Execute full file to preserve DO $$ blocks
-      console.log("  ↳ Executing file as a single batch");
       await pool.query(sql);
     }
 
-    console.log("\n✓ Migrations completed successfully");
     process.exit(0);
-  } catch (err) {
-    console.error("✗ Migration failed:", err);
+  } catch (_err) {
     process.exit(1);
   }
 }

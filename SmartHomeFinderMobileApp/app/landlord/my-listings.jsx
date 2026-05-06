@@ -3,7 +3,7 @@ import { FlatList, StyleSheet, Text, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router'
 import { COLORS, FONTS, SIZES } from '../../src/theme'
-import { PropertyCard, ScreenHeader, Loader, EmptyState } from '../../src/components'
+import { PropertyCard, ScreenHeader, Loader, EmptyState, Footer } from '../../src/components'
 import { propertyService } from '../../src/services/propertyService'
 
 export default function MyListings() {
@@ -49,6 +49,7 @@ export default function MyListings() {
             message="Start by adding your first property."
             actionTitle="Add Property" onAction={() => router.push('/landlord/add-property')} />
         }
+        ListFooterComponent={<Footer />}
         contentContainerStyle={styles.list}
         showsVerticalScrollIndicator={false}
       />

@@ -3,7 +3,7 @@ import { Keyboard, ScrollView, StyleSheet, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router'
 import { COLORS, SIZES } from '../../src/theme'
-import { ScreenHeader, Input, Button, Loader } from '../../src/components'
+import { ScreenHeader, Input, Button, Loader, Footer } from '../../src/components'
 import { authService } from '../../src/services/authService'
 
 export default function BankAccount() {
@@ -49,6 +49,7 @@ export default function BankAccount() {
         <Input label="Account Number" value={form.account_number} onChangeText={(t) => update('account_number', t)} keyboardType="number-pad" />
         <Input label="Account Name" value={form.account_name} onChangeText={(t) => update('account_name', t)} />
         <Button title="Save" onPress={save} loading={saving} />
+        <Footer />
       </ScrollView>
     </SafeAreaView>
   )

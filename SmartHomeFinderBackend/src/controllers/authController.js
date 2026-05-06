@@ -161,7 +161,7 @@ export const getProfile = async (req, res) => {
     const { id } = req.user;
 
     const result = await pool.query(
-      `SELECT id, full_name, email, phone, created_at, role, is_verified
+      `SELECT id, full_name, email, phone, avatar_url, created_at, role, is_verified
        FROM users
        WHERE id = $1`,
       [id]
@@ -179,8 +179,11 @@ export const getProfile = async (req, res) => {
         full_name: user.full_name,
         email: user.email,
         phone: user.phone,
+        avatar_url: user.avatar_url,
+        avatar: user.avatar_url,
         created_at: user.created_at,
         role: user.role,
+        is_verified: user.is_verified,
         verified: user.is_verified
       },
     });
@@ -409,9 +412,7 @@ export const forgotPassword = async (req, res) => {
     const resetLink = `${resetBaseUrl}/reset-password/${rawToken}`;
 
     // TODO: replace with email service
-    if (process.env.NODE_ENV !== "production") {
-      console.log("RESET LINK:", resetLink);
-    }
+    // const resetLink value is intentionally kept for future email delivery implementation
 
     return res.json({
       message: "Password reset link sent",

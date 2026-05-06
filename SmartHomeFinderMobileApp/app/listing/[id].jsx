@@ -13,9 +13,10 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
-import { Video, ResizeMode } from 'expo-av'
+import { VideoView } from 'expo-video'
+
 import { COLORS, FONTS, SHADOWS, SIZES } from '../../src/theme'
-import { Button, Loader } from '../../src/components'
+import { Button, Loader, Footer } from '../../src/components'
 import { propertyService } from '../../src/services/propertyService'
 import { useAuth } from '../../src/hooks/useAuth'
 import { useWishlist } from '../../src/hooks/useWishlist'
@@ -89,6 +90,25 @@ const parseVideoSource = (raw) => {
   return null
 }
 
+const resolveVideoRaw = (property) => {
+  if (!property) return null
+
+  const direct = [property.video_url, property.videoUrl, property.video, property.tour_video]
+    .find((v) => typeof v === 'string' && v.trim())
+  if (direct) return direct
+
+  if (Array.isArray(property.media)) {
+    const mediaVideo = property.media.find(
+      (m) =>
+        (m?.file_type === 'video' || m?.type === 'video') &&
+        typeof (m?.file_url || m?.url || m?.secure_url) === 'string'
+    )
+    if (mediaVideo) return mediaVideo.file_url || mediaVideo.url || mediaVideo.secure_url
+  }
+
+  return null
+}
+
 /* ── component ──────────────────────────────────────── */
 
 export default function ListingDetails() {
@@ -126,7 +146,8 @@ export default function ListingDetails() {
   const coord = useMemo(() => parseLatLng(property?.verify_location, property?.location), [property])
   const links = useMemo(() => amenityLinks(coord), [coord])
   const images = property?.images?.length ? property.images : [property?.image_url || PLACEHOLDER]
-  const videoSrc = useMemo(() => parseVideoSource(property?.video_url), [property?.video_url])
+  const rawVideoUrl = useMemo(() => resolveVideoRaw(property), [property])
+  const videoSrc = useMemo(() => parseVideoSource(rawVideoUrl), [rawVideoUrl])
   const hasVideo = Boolean(videoSrc)
   const wishlisted = property ? isWishlisted(property.id) : false
 
@@ -182,12 +203,13 @@ export default function ListingDetails() {
           {!showTour ? (
             <Image source={{ uri: images[imgIdx] }} style={styles.mainImage} />
           ) : hasVideo ? (
-            <Video
+            <VideoView
               source={{ uri: videoSrc }}
               style={styles.mainImage}
-              resizeMode={ResizeMode.CONTAIN}
-              useNativeControls
-              shouldPlay
+              contentFit="contain"
+              allowsFullscreen
+              allowsPictureInPicture={false}
+              startsInFullscreen={false}
             />
           ) : (
             <View style={[styles.mainImage, styles.noVideo]}>
@@ -209,7 +231,6 @@ export default function ListingDetails() {
           {/* Tour toggle */}
           <Pressable
             style={[styles.tourBtn, !hasVideo && styles.tourBtnDisabled]}
-            disabled={!hasVideo && !showTour}
             onPress={() => setShowTour((v) => !v)}
           >
             <Ionicons name={showTour ? 'images-outline' : 'videocam-outline'} size={16} color={COLORS.textOnDark} />
@@ -250,7 +271,7 @@ export default function ListingDetails() {
               style={styles.ctaBtn}
               onPress={() => {
                 if (!isLoggedIn) return router.push('/auth/sign-in')
-                router.push({ pathname: '/modal', params: { propertyId: property.id, mode: 'checkout' } })
+                router.push({ pathname: '/listing/checkout/[propertyId]', params: { propertyId: property.id } })
               }}
             >
               <Text style={styles.ctaBtnText}>
@@ -370,6 +391,8 @@ export default function ListingDetails() {
           </View>
 
         </View>
+
+        <Footer />
       </ScrollView>
     </SafeAreaView>
   )
