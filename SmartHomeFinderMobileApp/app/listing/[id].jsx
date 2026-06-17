@@ -245,18 +245,36 @@ export default function ListingDetails() {
               {property.purpose && (
                 <View style={styles.badge}><Text style={styles.badgeText}>{property.purpose}</Text></View>
               )}
+
+              {(['Rent', 'Sell'].includes(property.purpose)) && (
+                <Text style={{ marginTop: 6, fontSize: 13, color: COLORS.primary, fontWeight: '700' }}>
+                  Units left: {property.units_available ?? property.unitsAvailable ?? 0}
+                </Text>
+              )}
             </View>
-            <Pressable
-              style={styles.ctaBtn}
-              onPress={() => {
-                if (!isLoggedIn) return router.push('/auth/sign-in')
-                router.push({ pathname: '/modal', params: { propertyId: property.id, mode: 'checkout' } })
-              }}
-            >
-              <Text style={styles.ctaBtnText}>
-                {property.purpose === 'Rent' ? 'Rent Now' : 'Buy Now'}
-              </Text>
-            </Pressable>
+
+              {(() => {
+                const unitsLeft = property.units_available ?? property.unitsAvailable ?? 0
+                const depleted = unitsLeft <= 0
+
+                return (
+                  <Pressable
+                    style={[styles.ctaBtn, depleted && { backgroundColor: '#9ca3af' }]}
+                    onPress={() => {
+                      if (depleted) return
+                      if (!isLoggedIn) return router.push('/auth/sign-in')
+                      router.push({ pathname: '/modal', params: { propertyId: property.id, mode: 'checkout' } })
+                    }}
+                    disabled={depleted}
+                  >
+                    <Text style={styles.ctaBtnText}>
+                      {property.purpose === 'Rent'
+                        ? (depleted ? 'Unavailable' : 'Rent Now')
+                        : (depleted ? 'Sold out' : 'Buy Now')}
+                    </Text>
+                  </Pressable>
+                )
+              })()}
           </View>
 
           <Text style={styles.name}>{property.name || 'Untitled'}</Text>

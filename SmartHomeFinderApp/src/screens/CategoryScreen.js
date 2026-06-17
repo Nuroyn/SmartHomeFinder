@@ -8,29 +8,33 @@ import { useAuth } from "../context/UserContext";
 
 const ITEMS_PER_PAGE = 12;
 
+// NOTE: These values must match the exact lowercase property_type values stored in the database
+// If backend stores camelCase (e.g., "blockOfFlat"), update backend to store lowercase or add mapping
 const categoryTypes = {
-  apartments: ["apartment", "blockOfFlat", "studio"],
+  apartments: ["apartment", "blockofflat", "studio"],
   "new-listings": null, // special: show recents
-  "new-constructions": ["new construction", "new-construction"], // fallback to recent if none
-  "reduced-price": null, // placeholder: if we had discount flag
+  "new-constructions": ["new construction", "new-construction"],
+  "reduced-price": null, // placeholder: if we had a discount flag
   "luxury-homes": [
     "villa",
     "duplex",
     "penthouse",
     "mansion",
     "maisonette",
-    "SemiDetachedHouse",
-    "detachedHouse",
+    "semidetachedhouse",
+    "detachedhouse",
   ],
-  land: ["land", "recreationalLand", "agriculturalLand"],
+  land: ["land", "recreationalland", "agriculturalland"],
   commercial: [
     "warehouse",
-    "officeSpace",
-    "retailSpace",
-    "commercialBuilding",
-    "industrialProperty",
-    "mixedUseBuilding",
+    "officespace",
+    "retailspace",
+    "commercialbuilding",
+    "industrialproperty",
+    "mixedusebuilding",
   ],
+  "terraced-homes": ["terracedhouse"],
+  "recommended-for-you": null,
 };
 
 const titleFromSlug = (slug) =>
@@ -99,15 +103,21 @@ export default function CategoryScreen() {
   const filtered = useMemo(() => {
     if (!properties || !properties.length) return [];
     const types = categoryTypes[slug];
+    const normalizedType = (p) => String(p.property_type || p.propertyType || "").toLowerCase();
 
     // Special handling for "new listings" or null type: show recent
-    if (!types) {
+    if (types === null) {
       return [...properties].sort((a, b) =>
         (b.created_at || 0) > (a.created_at || 0) ? 1 : -1
       );
     }
 
-    return properties.filter((p) => types.includes(p.property_type || p.propertyType));
+    if (!Array.isArray(types)) {
+      return properties;
+    }
+
+    const normalizedTypes = types.map((t) => t.toLowerCase());
+    return properties.filter((p) => normalizedTypes.includes(normalizedType(p)));
   }, [properties, slug]);
 
   const list = filtered.length ? filtered : properties;

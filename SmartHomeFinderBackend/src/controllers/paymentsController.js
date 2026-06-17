@@ -357,60 +357,146 @@ export const addCard = async (req, res) => {
 
 // Verify Paystack payment using reference and update the transaction record
 export const verifyPaystackPayment = async (req, res) => {
+  let client = null;
+
   try {
-    const reference = req.query.reference || req.body?.reference || req.body?.data?.reference;
+    client = await pool.connect();
+
+    const reference =
+      req.query.reference || req.body?.reference || req.body?.data?.reference;
+
     if (!reference) {
       return res.status(400).json({ message: "reference is required" });
     }
 
     const secret = process.env.PAYSTACK_SECRET_KEY;
+
     if (!secret) {
       return res.status(500).json({ message: "PAYSTACK_SECRET_KEY not set" });
     }
 
-    const txLookup = await pool.query(
-      `SELECT id, property_price, buyer_fee, payment_status FROM transactions WHERE paystack_reference = $1 LIMIT 1`,
+    await client.query("BEGIN");
+
+    const txLookup = await client.query(
+      `SELECT id, property_id, property_price, buyer_fee, payment_status, purpose, units_decremented
+       FROM transactions
+       WHERE paystack_reference = $1
+       LIMIT 1
+       FOR UPDATE`,
       [reference]
     );
+
     if (txLookup.rows.length === 0) {
-      return res.status(404).json({ message: "Transaction not found for reference" });
+      await client.query("ROLLBACK");
+      return res.status(404).json({
+        message: "Transaction not found for reference",
+      });
     }
 
-    const verifyRes = await fetch(`https://api.paystack.co/transaction/verify/${reference}`, {
-      headers: { Authorization: `Bearer ${secret}` },
-    });
+    const tx = txLookup.rows[0];
+
+    const verifyRes = await fetch(
+      `https://api.paystack.co/transaction/verify/${reference}`,
+      {
+        headers: {
+          Authorization: `Bearer ${secret}`,
+        },
+      }
+    );
 
     if (!verifyRes.ok) {
-      return res.status(verifyRes.status).json({ message: "Payment verification failed" });
+      await client.query("ROLLBACK");
+      return res.status(verifyRes.status).json({
+        message: "Payment verification failed",
+      });
     }
 
     const verifyJson = await verifyRes.json();
     const data = verifyJson?.data;
-    const paymentStatus = data?.status || "failed";
+
+    const paystackStatus = data?.status || "failed";
     const currency = data?.currency || "NGN";
 
-    const expectedKobo = Math.round((Number(txLookup.rows[0].property_price) + Number(txLookup.rows[0].buyer_fee)) * 100);
-    const paidKobo = Number(data?.amount) || null;
-    const amountMismatch = paidKobo && expectedKobo && paidKobo !== expectedKobo;
-
-    const updateRes = await pool.query(
-      `UPDATE transactions
-       SET payment_status = $1,
-           status = $2,
-           currency = COALESCE($3, currency),
-           paid_at = CASE WHEN $1 = 'success' THEN NOW() ELSE paid_at END
-       WHERE paystack_reference = $4
-       RETURNING *`,
-      [paymentStatus, paymentStatus, currency, reference]
+    const expectedKobo = Math.round(
+      (Number(tx.property_price) + Number(tx.buyer_fee)) * 100
     );
 
+    const paidKobo = Number(data?.amount || 0);
+    const amountMismatch = paidKobo !== expectedKobo;
+
+    const finalStatus =
+      paystackStatus === "success" && !amountMismatch
+        ? "success"
+        : amountMismatch
+        ? "amount_mismatch"
+        : paystackStatus;
+
+    const shouldDecrement =
+  finalStatus === "success" &&
+  (tx.purpose === "Sell" || tx.purpose === "Rent") &&
+  tx.units_decremented === false;
+
+let unitsDecremented = false;
+
+if (shouldDecrement) {
+  const propUpdateRes = await client.query(
+    `UPDATE properties
+     SET units_available = units_available - 1,
+         updated_at = NOW()
+     WHERE id = $1
+       AND units_available > 0
+     RETURNING id`,
+    [tx.property_id]
+  );
+
+  if (propUpdateRes.rowCount !== 1) {
+    await client.query("ROLLBACK");
+
+    return res.status(409).json({
+      message: "Payment verified but property is sold out or unavailable",
+      paystack: data,
+    });
+  }
+
+  unitsDecremented = true;
+}
+
+const updateRes = await client.query(
+  `UPDATE transactions
+   SET payment_status = $1,
+       status = $1,
+       currency = COALESCE($2, currency),
+       paid_at = CASE WHEN $1 = 'success' THEN NOW() ELSE paid_at END,
+       units_decremented = CASE
+         WHEN $3 = true THEN true
+         ELSE units_decremented
+       END
+   WHERE paystack_reference = $4
+   RETURNING *`,
+  [finalStatus, currency, unitsDecremented, reference]
+);
+
+    await client.query("COMMIT");
+
     return res.json({
-      message: amountMismatch ? "Verified but amount mismatch" : "Payment verified",
+      message: amountMismatch
+        ? "Payment verified but amount mismatch"
+        : "Payment verified",
       transaction: updateRes.rows[0],
       paystack: data,
       mismatch: amountMismatch ? { expectedKobo, paidKobo } : null,
     });
   } catch (err) {
+    try {
+      if (client) await client.query("ROLLBACK");
+    } catch {
+      // ignore rollback errors
+    }
+
+    console.error("Verify Paystack error:", err);
+
     return res.status(500).json({ message: "Server error" });
+  } finally {
+    if (client) client.release();
   }
 };

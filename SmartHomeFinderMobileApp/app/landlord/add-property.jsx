@@ -45,6 +45,8 @@ export default function AddProperty() {
     propertyType: '', purpose: 'Rent',
     yearBuilt: '', numBedrooms: '', numBathrooms: '',
     landSize: '', hasGarage: '',
+    // Sell quantity
+    unitsTotal: '1',
   })
 
   /* ---- media state ---- */
@@ -194,6 +196,12 @@ export default function AddProperty() {
     if (!form.purpose) e.purpose = 'Select a purpose'
     if (imageUrls.length === 0) e.images = 'Upload at least one image'
     if (form.purpose === 'Sell' && !docUrl) e.doc = 'Upload a property document'
+
+    if (form.purpose === 'Sell' || form.purpose === 'Rent') {
+      const unitsNum = Number(form.unitsTotal)
+      if (!Number.isFinite(unitsNum) || unitsNum <= 0) e.unitsTotal = 'Units must be at least 1'
+    }
+
     return e
   }
 
@@ -219,6 +227,7 @@ export default function AddProperty() {
       purpose: form.purpose,
       yearBuilt: form.yearBuilt ? Number(form.yearBuilt) : undefined,
       landSize: form.landSize ? Number(form.landSize) : undefined,
+      unitsTotal: form.unitsTotal ? Number(form.unitsTotal) : 1,
       images: imageUrls,
       video_url: videoUrl || undefined,
       propertyDoc: docUrl || undefined,
@@ -305,23 +314,36 @@ export default function AddProperty() {
           {errors.purpose ? <Text style={styles.err}>{errors.purpose}</Text> : null}
         </View>
 
-        {/* ---------- document (sell only) ---------- */}
-        {form.purpose === 'Sell' && (
+        {/* ---------- document (sell only) + units total (rent+sell) ---------- */}
+        {(form.purpose === 'Sell' || form.purpose === 'Rent') && (
           <View style={styles.group}>
-            <Text style={styles.label}>Property Document (PDF / Image)</Text>
-            <Pressable style={styles.uploadBtn} onPress={pickDocument} disabled={uploadingDoc}>
-              {uploadingDoc
-                ? <ActivityIndicator size="small" color={COLORS.primary} />
-                : <Ionicons name="document-attach-outline" size={20} color={COLORS.primary} />}
-              <Text style={styles.uploadBtnText}>{uploadingDoc ? 'Uploading…' : 'Choose Document'}</Text>
-            </Pressable>
-            {docUrl && (
-              <View style={styles.successRow}>
-                <Ionicons name="checkmark-circle" size={16} color={COLORS.success} />
-                <Text style={styles.successText} numberOfLines={1}>{docName}</Text>
-              </View>
+            {form.purpose === 'Sell' && (
+              <>
+                <Text style={styles.label}>Property Document (PDF / Image)</Text>
+                <Pressable style={styles.uploadBtn} onPress={pickDocument} disabled={uploadingDoc}>
+                  {uploadingDoc
+                    ? <ActivityIndicator size="small" color={COLORS.primary} />
+                    : <Ionicons name="document-attach-outline" size={20} color={COLORS.primary} />}
+                  <Text style={styles.uploadBtnText}>{uploadingDoc ? 'Uploading…' : 'Choose Document'}</Text>
+                </Pressable>
+                {docUrl && (
+                  <View style={styles.successRow}>
+                    <Ionicons name="checkmark-circle" size={16} color={COLORS.success} />
+                    <Text style={styles.successText} numberOfLines={1}>{docName}</Text>
+                  </View>
+                )}
+                {errors.doc ? <Text style={styles.err}>{errors.doc}</Text> : null}
+              </>
             )}
-            {errors.doc ? <Text style={styles.err}>{errors.doc}</Text> : null}
+
+            <Input
+              label="Units Total (Quantity)"
+              value={form.unitsTotal}
+              onChangeText={(t) => update('unitsTotal', t)}
+              error={errors.unitsTotal}
+              keyboardType="numeric"
+              placeholder="e.g. 10"
+            />
           </View>
         )}
 

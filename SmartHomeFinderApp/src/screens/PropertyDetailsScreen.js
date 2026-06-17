@@ -181,26 +181,49 @@ const PropertyDetailsScreen = () => {
             <div style={{ color: "#555" }}>{property.location}</div>
             <div style={{ display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap" }}>
               <span style={{ fontWeight: 700, fontSize: 18 }}>{formatPrice(property.price)}</span>
+
+              {(["Rent", "Sell"].includes(property.purpose)) && (
+                <span style={{ fontSize: 14, color: "#265b3d", fontWeight: 700 }}>
+                  Units left: {property.units_available ?? property.unitsAvailable ?? 0}
+                </span>
+              )}
+
               <button
                 onClick={() => {
+                  const unitsLeft = property.units_available ?? property.unitsAvailable ?? 0;
+                  const isDepleted = unitsLeft <= 0;
+
+                  if (isDepleted) return;
+
                   if (!isLoggedIn) {
                     navigate("/login");
                     return;
                   }
                   navigate(`/checkout/${property.id}`);
                 }}
+                disabled={(property.units_available ?? property.unitsAvailable ?? 0) <= 0}
                 style={{
                   padding: "10px 20px",
                   borderRadius: 10,
                   border: "none",
-                  background: "#111827",
+                  background: (property.units_available ?? property.unitsAvailable ?? 0) <= 0 ? "#9ca3af" : "#111827",
                   color: "#fff",
-                  cursor: "pointer",
+                  cursor:
+                    (property.units_available ?? property.unitsAvailable ?? 0) <= 0
+                      ? "not-allowed"
+                      : "pointer",
                   fontWeight: 700,
                   fontSize: 14,
+                  opacity: (property.units_available ?? property.unitsAvailable ?? 0) <= 0 ? 0.9 : 1,
                 }}
               >
-                {property.purpose === "Rent" ? "Rent Now" : "Buy Now"}
+                {property.purpose === "Rent"
+                  ? (property.units_available ?? property.unitsAvailable ?? 0) <= 0
+                    ? "Unavailable"
+                    : "Rent Now"
+                  : (property.units_available ?? property.unitsAvailable ?? 0) <= 0
+                    ? "Sold out"
+                    : "Buy Now"}
               </button>
             </div>
 

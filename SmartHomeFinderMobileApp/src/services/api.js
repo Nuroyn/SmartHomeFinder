@@ -1,12 +1,12 @@
-import * as SecureStore from 'expo-secure-store'
 import { STORAGE_KEYS } from '../constants'
 import { API_BASE_URL } from '../config/api'
+import { getItemAsync } from '../utils/storage'
 
 /**
  * Lightweight fetch wrapper that auto-attaches the JWT token.
  */
 async function request(path, options = {}) {
-  const token = await SecureStore.getItemAsync(STORAGE_KEYS.TOKEN)
+  const token = await getItemAsync(STORAGE_KEYS.TOKEN)
 
   const headers = {
     ...(options.body instanceof FormData ? {} : { 'Content-Type': 'application/json' }),

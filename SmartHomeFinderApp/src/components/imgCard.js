@@ -39,6 +39,7 @@ const displayOrder = [
   "Reduced Price",
   "Luxury Homes",
   "Apartments",
+  "Terraced Homes",
   "Land",
   "Commercial",
 ];

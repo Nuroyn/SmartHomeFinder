@@ -32,7 +32,8 @@ async function runMigrations() {
       "014_update_transactions_payment.sql",
       "015_add_user_bank_fields.sql",
       "016_add_paystack_customer_fields.sql",
-      "017_create_wishlists.sql"
+      "017_create_wishlists.sql",
+      "018_add_units_and_units_decrement_flag.sql"
     ];
 
     for (const migrationFile of migrationFiles) {

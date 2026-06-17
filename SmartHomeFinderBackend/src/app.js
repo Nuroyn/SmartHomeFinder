@@ -60,20 +60,30 @@ const authLimiter = rateLimit({
 app.use("/api/auth/", authLimiter);
 app.use("/api/v1/auth/", authLimiter);
 
-const allowedOrigins = (process.env.CORS_ORIGINS || "http://localhost:3000,http://localhost:19006,exp://localhost:19000,exp://127.0.0.1:19000,http://10.0.2.2:3000")
+const allowedOrigins = (process.env.CORS_ORIGINS || "http://localhost:3000,http://localhost:19006,exp://localhost:19000,exp://127.0.0.1:19000,http://10.0.2.2:3000,http://localhost:8081")
   .split(",")
   .map((o) => o.trim())
   .filter(Boolean);
+
+const isDev = process.env.NODE_ENV !== "production";
+
+// Allow CORS preflight to succeed for browsers
+app.options("*", cors());
 
 app.use(
   cors({
     origin: (origin, callback) => {
       // Native mobile clients often send no origin; allow them by default
       if (!origin) return callback(null, true);
+
+      // In dev, be permissive so Expo web works without constantly updating env vars
+      if (isDev) return callback(null, true);
+
       if (allowedOrigins.includes(origin)) return callback(null, true);
       return callback(new Error("Not allowed by CORS"));
     },
     credentials: true,
+    optionsSuccessStatus: 200,
   })
 );
 

@@ -16,6 +16,8 @@ const AddProperty = ({ setShowAddProperty = () => {} }) => {
     propertyType: "",
     purpose: "",
     yearBuilt: "",
+    // Sell quantity
+    unitsTotal: 1,
     numBedrooms: 0,
     numBathrooms: 0,
     landSize: "",
@@ -262,6 +264,7 @@ const handleDocChange = async (e) => {
             propertyType: "",
             purpose: "",
             yearBuilt: "",
+            unitsTotal: 1,
             numBedrooms: 0,
             numBathrooms: 0,
             landSize: "",
@@ -430,6 +433,21 @@ const handleDocChange = async (e) => {
               )}
             </div>
           )}
+
+          {/* Units Total - for Rent + Sell */}
+          {formData.purpose === "Rent" || formData.purpose === "Sell" ? (
+            <div>
+              <label>Units Total (Quantity)</label>
+              <input
+                type="number"
+                name="unitsTotal"
+                value={formData.unitsTotal}
+                onChange={handleInputChange}
+                min={1}
+                required
+              />
+            </div>
+          ) : null}
 
       
           {/* Year Built / Year of Purchase */}

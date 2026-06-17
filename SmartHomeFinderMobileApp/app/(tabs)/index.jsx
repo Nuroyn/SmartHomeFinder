@@ -96,7 +96,7 @@ export default function Home() {
           {isLoggedIn ? `Hi, ${user?.full_name?.split(' ')[0] || 'there'}` : 'Find a home you love, faster.'}
         </Text>
         <Text style={styles.heroSubtitle}>
-          Explore verified listings across Nigeria with concierge-level support.
+          "Verified listings, concierge support, and transparent 5% fees—Nigeria’s most trusted way to rent or buy."
         </Text>
         <View style={styles.heroActions}>
           <Pressable style={styles.primaryBtn} onPress={() => router.push('/(tabs)/search')}>
@@ -108,27 +108,12 @@ export default function Home() {
             </Pressable>
           )}
         </View>
-        <View style={styles.heroStats}>
-          {[{ val: '12k+', label: 'verified listings' }, { val: '4.8\u2605', label: 'client rating' }, { val: '24/7', label: 'concierge chat' }].map((s, i) => (
-            <React.Fragment key={s.label}>
-              {i > 0 && <View style={styles.statDivider} />}
-              <View style={styles.statItem}>
-                <Text style={styles.statValue}>{s.val}</Text>
-                <Text style={styles.statLabel}>{s.label}</Text>
-              </View>
-            </React.Fragment>
-          ))}
-        </View>
       </View>
 
       <Text style={styles.sectionTitle}>Browse Homes by Category</Text>
 
       {categoryCards.length > 0 && (
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.catRow}
-        >
+        <View style={styles.catGrid}>
           {categoryCards.map((cat) => (
             <Pressable
               key={cat.slug}
@@ -144,7 +129,7 @@ export default function Home() {
               </View>
             </Pressable>
           ))}
-        </ScrollView>
+        </View>
       )}
 
       <FilterChips options={PROPERTY_TYPES} selected={selectedType} onSelect={setSelectedType} />
@@ -201,17 +186,12 @@ const styles = StyleSheet.create({
   primaryBtnText: { color: COLORS.primary, ...FONTS.bold, fontSize: SIZES.md },
   secondaryBtn: { borderWidth: 1, borderColor: COLORS.accent, paddingVertical: 12, paddingHorizontal: 16, borderRadius: SIZES.radius, backgroundColor: COLORS.accentLight },
   secondaryBtnText: { color: COLORS.accent, ...FONTS.bold, fontSize: SIZES.md },
-  heroStats: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingTop: 12, borderTopWidth: 1, borderTopColor: COLORS.borderLight },
-  statItem: { flex: 1 },
-  statDivider: { width: 1, height: 34, backgroundColor: COLORS.borderLight, marginHorizontal: 8 },
-  statValue: { color: COLORS.textOnDark, ...FONTS.extraBold, fontSize: SIZES.lg },
-  statLabel: { color: COLORS.textMuted, fontSize: SIZES.sm, marginTop: 2 },
   sectionTitle: { fontSize: SIZES.xl, ...FONTS.extraBold, color: COLORS.textPrimary, marginTop: 8 },
-  /* Category cards row */
-  catRow: { paddingVertical: 8, gap: 12 },
+  /* Category cards grid */
+  catGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', paddingVertical: 8 },
   catCard: {
-    width: 140, height: 100, borderRadius: SIZES.radius,
-    overflow: 'hidden', backgroundColor: COLORS.border,
+    width: '48%', height: 110, borderRadius: SIZES.radius,
+    overflow: 'hidden', backgroundColor: COLORS.border, marginBottom: 12,
   },
   catImage: { ...StyleSheet.absoluteFillObject, width: undefined, height: undefined },
   catOverlay: {

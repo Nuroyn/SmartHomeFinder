@@ -36,6 +36,7 @@ export const addProperty = async (req, res) => {
     landSize,
     verifyLocation,
     hasGarage,
+    unitsTotal,
     images,
     video_url,
     propertyDoc,
@@ -55,6 +56,20 @@ export const addProperty = async (req, res) => {
     return res.status(400).json({ message: "Location is required (max 500 chars)" });
   }
 
+  const unitsTotalNum =
+    unitsTotal === undefined || unitsTotal === null || unitsTotal === ""
+      ? 1
+      : Number(unitsTotal);
+
+  if (!Number.isFinite(unitsTotalNum) || unitsTotalNum <= 0) {
+    return res.status(400).json({ message: "units_total must be a valid number greater than 0" });
+  }
+
+  const unitsTotalInt = Math.floor(unitsTotalNum);
+  if (unitsTotalInt <= 0) {
+    return res.status(400).json({ message: "units_total must be a whole number greater than 0" });
+  }
+
   const landlordId = req.user.id;
 
   const client = await pool.connect(); // Use pool here instead of db
@@ -67,9 +82,9 @@ export const addProperty = async (req, res) => {
         landlord_id, name, description, price, location,
         property_type, purpose, year_built, num_bedrooms,
         num_bathrooms, land_size, verify_location,
-        has_garage, images
+        has_garage, units_total, units_available, images
       )
-      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)
+      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16)
       RETURNING id
     `;
 
@@ -77,7 +92,7 @@ export const addProperty = async (req, res) => {
       landlordId, name, description, price, location,
       propertyType, purpose, yearBuilt, numBedrooms || 0,
       numBathrooms || 0, landSize, verifyLocation,
-      hasGarage || false, Array.isArray(images) ? images : []
+      hasGarage || false, unitsTotalInt, unitsTotalInt, Array.isArray(images) ? images : []
     ];
 
     const propertyResult = await client.query(insertPropertyQuery, propertyValues);
